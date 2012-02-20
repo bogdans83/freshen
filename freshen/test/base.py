@@ -6,6 +6,11 @@ import sys
 from freshen.context import ftc, scc
 from freshen.stepregistry import UndefinedStepImpl
 
+try:
+    from django.test import TestCase
+except ImportError:
+    from unittest import TestCase
+
 
 class ExceptionWrapper(Exception):
 
@@ -28,20 +33,7 @@ class FeatureSuite(object):
         ftc.clear()
 
 
-class FreshenTestCase(object):
-
-    start_live_server = True
-    database_single_transaction = True
-    database_flush = True
-    selenium_start = False
-    no_database_interaction = False
-    make_translations = True
-    required_sane_plugins = ["django", "http"]
-    django_plugin_started = False
-    http_plugin_started = False
-    last_step = None
-
-    test_type = "http"
+class FreshenTestCase(TestCase):
 
     def __init__(self, step_runner, step_registry, feature, scenario, feature_suite):
         self.feature = feature
@@ -55,6 +47,11 @@ class FreshenTestCase(object):
     def setUp(self):
         #log.debug("Clearing scenario context")
         scc.clear()
+        if scc.fixtures:
+            self.fixtures = scc.fixtures
+        if hasattr(self, '_pre_setup'):
+            self._pre_setup()
+        super(FreshenTestCase, self).setUp()
 
     def runAfterStepHooks(self):
         for hook_impl in reversed(self.step_registry.get_hooks('after_step', self.scenario.get_tags())):
