@@ -43,6 +43,7 @@ class FreshenTestCase(TestCase):
         self.step_runner = step_runner
 
         self.description = feature.name + ": " + scenario.name
+        self._cleanups = []
 
     def setUp(self):
         #log.debug("Clearing scenario context")
@@ -69,3 +70,8 @@ class FreshenTestCase(TestCase):
 
     def runScenario(self):
         raise NotImplementedError('Must be implemented by subclasses')
+        
+    def tearDown(self):
+        super(FreshenTestCase, self).tearDown()
+        if hasattr(self, '_post_teardown'):
+            self._post_teardown()
