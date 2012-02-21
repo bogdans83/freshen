@@ -30,6 +30,8 @@ class FeatureSuite(object):
 
     def setUp(self):
         #log.debug("Clearing feature context")
+        if ftc.fixtures:
+            self.fixtures = ftc.fixtures
         ftc.clear()
 
 
@@ -47,9 +49,9 @@ class FreshenTestCase(TestCase):
 
     def setUp(self):
         #log.debug("Clearing scenario context")
+        if self.context.fixtures:
+            self.fixtures = self.context.fixtures
         scc.clear()
-        if scc.fixtures:
-            self.fixtures = scc.fixtures
         if hasattr(self, '_pre_setup'):
             self._pre_setup()
         super(FreshenTestCase, self).setUp()
